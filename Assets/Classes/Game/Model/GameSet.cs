@@ -1,6 +1,6 @@
 ﻿using UniRx;
 
-namespace Assets.Classes.Game.Models {
+namespace Assets.Classes.Game.Model {
 	public class PlayerData : GameModel {
 		public Player Player { get; set; }
 		public string Name { get; set; }

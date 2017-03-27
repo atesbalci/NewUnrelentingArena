@@ -1,5 +1,5 @@
 ﻿using UniRx;
-using Assets.Classes.Game.Models;
+using Assets.Classes.Game.Model;
 
 namespace Assets.Classes.Game {
 	public class GameController {
