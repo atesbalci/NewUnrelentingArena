@@ -1,6 +1,6 @@
 ﻿using UniRx;
 
-namespace Assets.Classes.Utility {
+namespace UnrelentingArena.Classes.Utility {
 	public abstract class GameEvent { }
 
 	public class MessageManager {

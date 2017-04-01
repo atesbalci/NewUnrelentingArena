@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Assets.Classes.Game.Model;
+using UnrelentingArena.Classes.Game.Model;
 using System;
 
-namespace Assets.Classes.Game.Script {
+namespace UnrelentingArena.Classes.Game.Script {
 	public abstract class SkillScript : GameScript {
 		public float RemainingTime { get; set; }
 
@@ -16,12 +16,21 @@ namespace Assets.Classes.Game.Script {
 			}
 		}
 
-		public override void Start() {
+		protected override void Start() {
 			base.Start();
 			_isDead = false;
+			Color color = Skill.Player.Color;
+			foreach (var rend in GetComponentsInChildren<Renderer>()) {
+				foreach (var mat in rend.materials) {
+					if (mat.name.Contains("PlayerColored")) {
+						mat.color = color;
+						mat.SetColor("_TintColor", color);
+					}
+				}
+			}
 		}
 
-		public override void Update() {
+		protected override void Update() {
 			base.Update();
 			if (!_isDead) {
 				UpdateAlive();
@@ -37,8 +46,8 @@ namespace Assets.Classes.Game.Script {
 			_isDead = true;
 		}
 
-		public abstract void UpdateAlive();
+		protected abstract void UpdateAlive();
 
-		public abstract void UpdateDead();
+		protected abstract void UpdateDead();
 	}
 }

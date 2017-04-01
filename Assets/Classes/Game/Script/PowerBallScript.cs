@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnrelentingArena.Classes.Game.Model;
+using System;
 
 namespace UnrelentingArena.Classes.Game.Script {
-	public abstract class GameScript : MonoBehaviour {
-		public GameModel Model { get; set; }
+	public class PowerBallScript : SkillScript {
+		protected override void UpdateAlive() {
+			//TODO
+		}
 
-		protected virtual void Start() { }
-		protected virtual void Update() { }
+		protected override void UpdateDead() {
+			//TODO
+		}
 	}
 }

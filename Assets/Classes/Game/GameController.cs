@@ -1,8 +1,12 @@
 ﻿using UniRx;
-using Assets.Classes.Game.Model;
+using UnrelentingArena.Classes.Game.Model;
 
-namespace Assets.Classes.Game {
+namespace UnrelentingArena.Classes.Game {
 	public class GameController {
 		public GameSet Game { get; set; }
+
+		public void Update(float delta) {
+
+		}
 	}
 }
