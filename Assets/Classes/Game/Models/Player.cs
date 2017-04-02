@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UnrelentingArena.Classes.Game.Model {
+namespace UnrelentingArena.Classes.Game.Models {
 	public class Player : GameModel {
 		public ReactiveProperty<float> Health { get; set; }
 		public ReactiveProperty<float> Energy { get; set; }

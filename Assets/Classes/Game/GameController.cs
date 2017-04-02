@@ -1,5 +1,5 @@
 ﻿using UniRx;
-using UnrelentingArena.Classes.Game.Model;
+using UnrelentingArena.Classes.Game.Models;
 
 namespace UnrelentingArena.Classes.Game {
 	public class GameController {

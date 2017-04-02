@@ -1,6 +1,6 @@
 ﻿using UniRx;
 
-namespace UnrelentingArena.Classes.Game.Model {
+namespace UnrelentingArena.Classes.Game.Models {
 	public class PlayerData : GameModel {
 		public Player Player { get; set; }
 		public string Name { get; set; }

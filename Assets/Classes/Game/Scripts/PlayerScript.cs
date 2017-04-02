@@ -1,13 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnrelentingArena.Classes.Game.Model;
+using UnrelentingArena.Classes.Game.Models;
 using UnrelentingArena.Classes.Utility;
 using UniRx;
 
-namespace UnrelentingArena.Classes.Game.Script {
+namespace UnrelentingArena.Classes.Game.Scripts {
 	public class PlayerScript : GameScript {
 		public Vector3ReactiveProperty CurrentMovement { get; set; }
+		public QuaternionReactiveProperty CurrentRotation { get; set; }
 		public bool IsLocalPlayer { get; set; }
 		public Player Player {
 			get {
@@ -16,11 +17,13 @@ namespace UnrelentingArena.Classes.Game.Script {
 		}
 
 		private ControlManager _controlManager;
+		private Plane _plane;
 
 		protected override void Start() {
 			base.Start();
 			Model = new Player();
 			CurrentMovement = new Vector3ReactiveProperty(Vector3.zero);
+			CurrentRotation = new QuaternionReactiveProperty(Quaternion.identity);
 			_controlManager = ControlManager.Instance;
 			if (_controlManager == null)
 				_controlManager = new ControlManager();
@@ -32,6 +35,7 @@ namespace UnrelentingArena.Classes.Game.Script {
 					}
 				}
 			}
+			_plane = new Plane(Vector3.up, transform.position);
 			IsLocalPlayer = true;
 		}
 
@@ -41,6 +45,7 @@ namespace UnrelentingArena.Classes.Game.Script {
 				MovementInputUpdate();
 			}
 			transform.position += CurrentMovement.Value * Player.CurrentSpeed.Value * Time.deltaTime;
+			transform.rotation = Quaternion.RotateTowards(transform.rotation, CurrentRotation.Value, Time.deltaTime * 360);
 		}
 
 		private void MovementInputUpdate() {
@@ -55,9 +60,17 @@ namespace UnrelentingArena.Classes.Game.Script {
 				movement += Vector3.right;
 			if (Input.GetKey(_controlManager.Keys[(int)GameKey.Left]))
 				movement += Vector3.left;
+
+			float hitdist = 0.0f;
+			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+			Quaternion rotation = transform.rotation;
+            if (_plane.Raycast(ray, out hitdist)) {
+				rotation = Quaternion.LookRotation(ray.GetPoint(hitdist) - transform.position, Vector3.up);
+			}
 			#endregion
 
 			CurrentMovement.Value = movement;
+			CurrentRotation.Value = rotation;
 		}
 	}
 }

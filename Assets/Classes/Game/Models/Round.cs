@@ -1,7 +1,7 @@
 ﻿using UniRx;
 using System;
 
-namespace UnrelentingArena.Classes.Game.Model {
+namespace UnrelentingArena.Classes.Game.Models {
 	public class Round : GameModel {
 		public GameSet Game { get; set; }
 		public float Time { get; private set; }
