@@ -6,6 +6,12 @@ using UnrelentingArena.Classes.Utility;
 using UniRx;
 
 namespace UnrelentingArena.Classes.Game.Scripts {
+	public class SkillCastBeginEvent : GameEvent { }
+	public class SkillCastEvent {
+		public Vector3 Direction { get; set; }
+		public Skill Skill { get; set; }
+	}
+
 	public class PlayerScript : GameScript {
 		public Vector3ReactiveProperty CurrentMovement { get; set; }
 		public QuaternionReactiveProperty CurrentRotation { get; set; }
