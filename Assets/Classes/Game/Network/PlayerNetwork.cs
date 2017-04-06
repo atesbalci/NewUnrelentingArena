@@ -8,6 +8,8 @@ using UniRx;
 
 namespace UnrelentingArena.Classes.Game.Network {
 	public class PlayerNetwork : GameNetworker {
+		public float SyncFrequency = 0.05f;
+
 		//Sync stats
 		[SyncVar(hook = "SyncHealth")]
 		private float _health;
@@ -16,11 +18,13 @@ namespace UnrelentingArena.Classes.Game.Network {
 
 		//Sync transform data
 		[SyncVar]
-		private Vector2 _position;
-		[SyncVar]
 		private Quaternion _rotation;
 		[SyncVar]
 		private Vector2 _movementDirection;
+		[SyncVar]
+		private Vector2 _position;
+
+		private float _timer;
 
 		public Player Player {
 			get {
@@ -36,12 +40,15 @@ namespace UnrelentingArena.Classes.Game.Network {
 
 		public override void Start() {
 			base.Start();
+			PlayerScript.IsLocalPlayer = isLocalPlayer;
+			_timer = 0;
 			_health = Player.Health.Value;
 			_energy = Player.Energy.Value;
 		}
 
 		public override void OnStartLocalPlayer() {
 			base.OnStartLocalPlayer();
+
 			Player.Health.Subscribe(val => {
 				_health = val;
 			});
@@ -53,17 +60,21 @@ namespace UnrelentingArena.Classes.Game.Network {
 		public override void Update() {
 			base.Update();
 			if (!isLocalPlayer) {
-				transform.position = Vector3.Lerp(transform.position,
-					new Vector3(_position.x, transform.position.y, _position.y),
-					Time.deltaTime * 10);
+				Debug.Log(_movementDirection);
 				PlayerScript.CurrentRotation.Value = _rotation;
 				PlayerScript.CurrentMovement.Value = new Vector3(_movementDirection.x,
 					PlayerScript.CurrentMovement.Value.y, _movementDirection.y);
+				transform.position = Vector3.Lerp(transform.position,
+					new Vector3(_position.x, transform.position.y, _position.y), Time.deltaTime * 20);
 			} else {
-				_position = new Vector2(transform.position.x, transform.position.z);
-				_rotation = PlayerScript.CurrentRotation.Value;
-				_movementDirection = new Vector2(PlayerScript.CurrentMovement.Value.x,
-					PlayerScript.CurrentMovement.Value.z);
+				_timer += Time.deltaTime;
+				if (_timer > SyncFrequency) {
+					CmdSyncPos(new Vector2(transform.position.x, transform.position.z));
+					Vector3 mov = PlayerScript.CurrentMovement.Value;
+					CmdSyncMovement(new Vector2(mov.x, mov.z));
+					CmdSyncRot(PlayerScript.CurrentRotation.Value);
+					_timer -= SyncFrequency;
+				}
 			}
 		}
 
@@ -72,6 +83,21 @@ namespace UnrelentingArena.Classes.Game.Network {
 		}
 		private void SyncEnergy(float energy) {
 			Player.Energy.Value = energy;
+		}
+
+		[Command]
+		private void CmdSyncMovement(Vector2 mov) {
+			_movementDirection = mov;
+		}
+
+		[Command]
+		private void CmdSyncRot(Quaternion rot) {
+			_rotation = rot;
+		}
+
+		[Command]
+		private void CmdSyncPos(Vector2 pos) {
+			_position = pos;
 		}
 	}
 }

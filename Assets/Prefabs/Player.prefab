@@ -168,6 +168,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Script: {fileID: 114903442851983348}
+  SyncFrequency: 0.05
 --- !u!136 &136511947807903972
 CapsuleCollider:
   m_ObjectHideFlags: 1

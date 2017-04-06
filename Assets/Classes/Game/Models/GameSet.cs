@@ -1,4 +1,5 @@
 ﻿using UniRx;
+using UnityEngine;
 
 namespace UnrelentingArena.Classes.Game.Models {
 	public class PlayerData : GameModel {
@@ -7,24 +8,33 @@ namespace UnrelentingArena.Classes.Game.Models {
 		public ReactiveProperty<int> Points { get; set; }
 	}
 	public class GameSet : GameModel {
+		public static Color[] Colors = { Color.red, Color.green, Color.blue, Color.cyan, Color.magenta, Color.yellow };
+
 		public PlayerData LocalPlayer { get; set; }
 		public ReactiveCollection<PlayerData> Players { get; set; }
 		public ReactiveProperty<int> RoundNo;
 		public Round CurrentRound { get; set; }
 
-		public GameSet() {
+		private bool _isServer;
+
+		public GameSet(bool isServer) {
+			_isServer = isServer;
 			RoundNo = new ReactiveProperty<int>(0);
-			LocalPlayer = new PlayerData() {
-				Player = new Player(),
-				Name = "Player", //TODO: Get player name
-				Points = new ReactiveProperty<int>(0)
-			};
 			Players = new ReactiveCollection<PlayerData>();
-			Players.Add(LocalPlayer);
+			AddPlayer("Name"); //TODO: Get player name
+			LocalPlayer = Players[0];
+		}
+
+		public void AddPlayer(string name) {
+			Players.Add(new PlayerData() {
+				Player = new Player(),
+				Name = name,
+				Points = new ReactiveProperty<int>(0)
+			});
 		}
 
 		public void Update(float delta) {
-			
+			CurrentRound.Update(delta);
 		}
 	}
 }

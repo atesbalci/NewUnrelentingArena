@@ -55,7 +55,7 @@ namespace UnrelentingArena.Classes.Game.Scripts {
 		}
 
 		private void MovementInputUpdate() {
-			Vector3 movement = Vector3.zero;
+			Vector3 movement = Vector3.MoveTowards(CurrentMovement.Value, Vector3.zero, Time.deltaTime * 2);
 
 			#region Get Input
 			if (Input.GetKey(_controlManager.Keys[(int)GameKey.Up]))
@@ -70,11 +70,12 @@ namespace UnrelentingArena.Classes.Game.Scripts {
 			float hitdist = 0.0f;
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			Quaternion rotation = transform.rotation;
-            if (_plane.Raycast(ray, out hitdist)) {
+			if (_plane.Raycast(ray, out hitdist)) {
 				rotation = Quaternion.LookRotation(ray.GetPoint(hitdist) - transform.position, Vector3.up);
 			}
 			#endregion
 
+			movement = Vector3.MoveTowards(Vector3.zero, movement, 1);
 			CurrentMovement.Value = movement;
 			CurrentRotation.Value = rotation;
 		}
