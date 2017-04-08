@@ -14,11 +14,10 @@ namespace UnrelentingArena.Classes.Game.Models {
 		public ReactiveCollection<PlayerData> Players { get; set; }
 		public ReactiveProperty<int> RoundNo;
 		public Round CurrentRound { get; set; }
-
-		private bool _isServer;
+		public bool IsServer { get; set; }
 
 		public GameSet(bool isServer) {
-			_isServer = isServer;
+			IsServer = isServer;
 			RoundNo = new ReactiveProperty<int>(0);
 			Players = new ReactiveCollection<PlayerData>();
 			AddPlayer("Name"); //TODO: Get player name
