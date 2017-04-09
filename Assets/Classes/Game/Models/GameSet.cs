@@ -12,7 +12,7 @@ namespace UnrelentingArena.Classes.Game.Models {
 
 		public PlayerData LocalPlayer { get; set; }
 		public ReactiveCollection<PlayerData> Players { get; set; }
-		public ReactiveProperty<int> RoundNo;
+		public ReactiveProperty<int> RoundNo { get; set; }
 		public Round CurrentRound { get; set; }
 		public bool IsServer { get; set; }
 
@@ -33,7 +33,8 @@ namespace UnrelentingArena.Classes.Game.Models {
 		}
 
 		public void Update(float delta) {
-			CurrentRound.Update(delta);
+			if(CurrentRound != null)
+				CurrentRound.Update(delta);
 		}
 	}
 }

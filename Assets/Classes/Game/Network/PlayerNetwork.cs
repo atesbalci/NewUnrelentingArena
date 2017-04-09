@@ -44,23 +44,20 @@ namespace UnrelentingArena.Classes.Game.Network {
 			_timer = 0;
 			_health = Player.Health.Value;
 			_energy = Player.Energy.Value;
-		}
 
-		public override void OnStartLocalPlayer() {
-			base.OnStartLocalPlayer();
-
-			Player.Health.Subscribe(val => {
-				_health = val;
-			});
-			Player.Energy.Subscribe(val => {
-				_energy = val;
-			});
+			if(isLocalPlayer) {
+				Player.Health.Subscribe(val => {
+					_health = val;
+				});
+				Player.Energy.Subscribe(val => {
+					_energy = val;
+				});
+			}
 		}
 
 		public override void Update() {
 			base.Update();
 			if (!isLocalPlayer) {
-				Debug.Log(_movementDirection);
 				PlayerScript.CurrentRotation.Value = _rotation;
 				PlayerScript.CurrentMovement.Value = new Vector3(_movementDirection.x,
 					PlayerScript.CurrentMovement.Value.y, _movementDirection.y);

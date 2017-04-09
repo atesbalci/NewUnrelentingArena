@@ -27,7 +27,6 @@ namespace UnrelentingArena.Classes.Game.Scripts {
 
 		protected override void Start() {
 			base.Start();
-			Model = new Player();
 			CurrentMovement = new Vector3ReactiveProperty(Vector3.zero);
 			CurrentRotation = new QuaternionReactiveProperty(Quaternion.identity);
 			_controlManager = ControlManager.Instance;
