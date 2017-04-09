@@ -12,9 +12,9 @@ namespace UnrelentingArena.Classes.Game.Models {
 		public List<Skill> Skills { get; set; }
 		public Color Color { get; set; }
 
-		public Player() {
+		public Player(Color color) {
 			CurrentSpeed = new ReactiveProperty<float>(10);
-			Color = Color.red;
+			Color = color;
 			Dead = new ReactiveProperty<bool>(false);
 		}
 	}

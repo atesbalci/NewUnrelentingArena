@@ -6,6 +6,7 @@ using UnrelentingArena.Classes.Game.Models;
 using UniRx;
 using UnrelentingArena.Classes.Game.Scripts;
 using UnityEngine.Networking.Match;
+using System.Linq;
 
 namespace UnrelentingArena.Classes.Game.Network {
 	public class GameNetworkManager : NetworkManager {
@@ -16,9 +17,9 @@ namespace UnrelentingArena.Classes.Game.Network {
 			Synchronizer.InitializeServer();
 		}
 
-		public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId) {
-			base.OnServerAddPlayer(conn, playerControllerId);
-			Debug.Log(conn.connectionId);
+		public override void OnClientConnect(NetworkConnection conn) {
+			base.OnClientConnect(conn);
+			Synchronizer.InitializeClient(conn);
 		}
 	}
 }

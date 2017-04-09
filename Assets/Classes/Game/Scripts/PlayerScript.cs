@@ -25,6 +25,10 @@ namespace UnrelentingArena.Classes.Game.Scripts {
 		private ControlManager _controlManager;
 		private Plane _plane;
 
+		private void Awake() {
+			IsLocalPlayer = false;
+		}
+
 		protected override void Start() {
 			base.Start();
 			CurrentMovement = new Vector3ReactiveProperty(Vector3.zero);
@@ -32,6 +36,8 @@ namespace UnrelentingArena.Classes.Game.Scripts {
 			_controlManager = ControlManager.Instance;
 			if (_controlManager == null)
 				_controlManager = new ControlManager();
+			_plane = new Plane(Vector3.up, transform.position);
+
 			foreach (var rend in GetComponentsInChildren<Renderer>()) {
 				foreach (var mat in rend.materials) {
 					if (mat.name.Contains("PlayerColored")) {
@@ -40,8 +46,6 @@ namespace UnrelentingArena.Classes.Game.Scripts {
 					}
 				}
 			}
-			_plane = new Plane(Vector3.up, transform.position);
-			IsLocalPlayer = true;
 		}
 
 		protected override void Update() {

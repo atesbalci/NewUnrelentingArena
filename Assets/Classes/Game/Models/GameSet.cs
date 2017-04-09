@@ -9,9 +9,8 @@ namespace UnrelentingArena.Classes.Game.Models {
 	}
 	public class GameSet : GameModel {
 		public static Color[] Colors = { Color.red, Color.green, Color.blue, Color.cyan, Color.magenta, Color.yellow };
-
-		public PlayerData LocalPlayer { get; set; }
-		public ReactiveDictionary<int, PlayerData> Players { get; set; }
+		
+		public ReactiveDictionary<uint, PlayerData> Players { get; set; }
 		public ReactiveProperty<int> RoundNo { get; set; }
 		public Round CurrentRound { get; set; }
 		public bool IsServer { get; set; }
@@ -19,22 +18,31 @@ namespace UnrelentingArena.Classes.Game.Models {
 		public GameSet(bool isServer, int connectionId) {
 			IsServer = isServer;
 			RoundNo = new ReactiveProperty<int>(0);
-			Players = new ReactiveDictionary<int, PlayerData>();
-			AddPlayer(connectionId, PlayerPrefs.GetString("PlayerName", "Player"));
-			LocalPlayer = Players[0];
+			Players = new ReactiveDictionary<uint, PlayerData>();
 		}
 
-		public void AddPlayer(int id, string name) {
+		public void AddPlayer(uint id, string name, Color color) {
 			Players[id] = new PlayerData() {
-				Player = new Player(),
+				Player = new Player(color),
 				Name = name,
 				Points = new ReactiveProperty<int>(0)
 			};
 		}
 
+		public void RemovePlayer(uint id) {
+			Players.Remove(id);
+		}
+
 		public void Update(float delta) {
 			if(CurrentRound != null)
 				CurrentRound.Update(delta);
+		}
+
+		public void RefreshPlayers(uint[] ids, string[] names) {
+			Players.Clear();
+			for(int i = 0; i < names.Length; i++) {
+				AddPlayer(ids[i], names[i], Colors[i]);
+			}
 		}
 	}
 }

@@ -5,6 +5,7 @@ using UnityEngine.Networking;
 using UnrelentingArena.Classes.Game.Models;
 using UnrelentingArena.Classes.Game.Scripts;
 using UniRx;
+using UnrelentingArena.Classes.Utility;
 
 namespace UnrelentingArena.Classes.Game.Network {
 	public class PlayerNetwork : GameNetworker {
@@ -38,9 +39,18 @@ namespace UnrelentingArena.Classes.Game.Network {
 			}
 		}
 
+		public override void OnStartLocalPlayer() {
+			CmdSendName(PlayerPrefs.GetString("PlayerName", "Player"), netId.Value);
+			PlayerScript.IsLocalPlayer = true;
+		}
+
+		public override void OnStartClient() {
+			base.OnStartClient();
+			gameObject.SetActive(false);
+		}
+
 		public override void Start() {
 			base.Start();
-			PlayerScript.IsLocalPlayer = isLocalPlayer;
 			_timer = 0;
 			_health = Player.Health.Value;
 			_energy = Player.Energy.Value;
@@ -82,6 +92,15 @@ namespace UnrelentingArena.Classes.Game.Network {
 			Player.Energy.Value = energy;
 		}
 
+		public override void OnNetworkDestroy() {
+			base.OnNetworkDestroy();
+			if (isServer) {
+				MessageManager.SendEvent(new PlayerRemovedEvent {
+					Id = netId.Value
+				});
+			}
+		}
+
 		[Command]
 		private void CmdSyncMovement(Vector2 mov) {
 			_movementDirection = mov;
@@ -95,6 +114,14 @@ namespace UnrelentingArena.Classes.Game.Network {
 		[Command]
 		private void CmdSyncPos(Vector2 pos) {
 			_position = pos;
+		}
+
+		[Command]
+		public void CmdSendName(string name, uint id) {
+			MessageManager.SendEvent(new SendNameEvent {
+				Id = id,
+				Name = name
+			});
 		}
 	}
 }
