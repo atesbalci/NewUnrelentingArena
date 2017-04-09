@@ -498,10 +498,6 @@ namespace UniRx
             return ((IDictionary)inner).GetEnumerator();
         }
 
-		public static implicit operator ReactiveDictionary<TKey, TValue>(ReactiveCollection<global::UnrelentingArena.Classes.Game.Models.PlayerData> v) {
-			throw new NotImplementedException();
-		}
-
 		#endregion
 	}
 
