@@ -16,11 +16,11 @@ namespace UnrelentingArena.Classes.Game.Models {
 		public Round() {
 			Time = 0;
 			foreach (var player in Game.Players) {
-				player.Player.Dead.Subscribe(val => {
+				player.Value.Player.Dead.Subscribe(val => {
 					if (val) {
 						int aliveAmt = 0;
 						foreach (var pl in Game.Players) {
-							if (!pl.Player.Dead.Value)
+							if (!pl.Value.Player.Dead.Value)
 								aliveAmt++;
 						}
 						if (aliveAmt <= 1)
@@ -45,7 +45,7 @@ namespace UnrelentingArena.Classes.Game.Models {
 			//TODO: End round
 			State = RoundState.End;
 			foreach (var pl in Game.Players) {
-				pl.Player.Dead.Value = true;
+				pl.Value.Player.Dead.Value = true;
 			}
 		}
 

@@ -9,7 +9,6 @@ using System.Linq;
 namespace UnrelentingArena.Classes.Game.Network {
 	public class GameNetworkSynchronizer : GameNetworker {
 		public GameSet Game { get; set; }
-		public Dictionary<PlayerData, NetworkConnection> PlayerConnections { get; set; }
 
 		public override void Start() {
 			base.Start();
@@ -18,23 +17,25 @@ namespace UnrelentingArena.Classes.Game.Network {
 
 		public void InitializeServer() {
 			base.OnStartServer();
-			Game = new GameSet(true);
-			PlayerConnections = new Dictionary<PlayerData, NetworkConnection>();
-			PlayerConnections[Game.LocalPlayer] = null;
+			Game = new GameSet(true, 0);
 		}
 
-		public void InitializeServer(NetworkConnection conn) {
-			Game = new GameSet(false);
+		public void InitializeClient(NetworkConnection conn) {
+			Game = new GameSet(false, conn.connectionId);
 		}
 
 		public void Disconnect(NetworkConnection conn) {
 			Game = null;
-			PlayerConnections = null;
 		}
 
 		public override void Update() {
 			base.Update();
 			Game.Update(Time.deltaTime);
+		}
+
+		[TargetRpc]
+		public void TargetSynchronizePlayerList(NetworkConnection target, string[] name, int[] ids) {
+
 		}
 	}
 }

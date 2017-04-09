@@ -11,25 +11,25 @@ namespace UnrelentingArena.Classes.Game.Models {
 		public static Color[] Colors = { Color.red, Color.green, Color.blue, Color.cyan, Color.magenta, Color.yellow };
 
 		public PlayerData LocalPlayer { get; set; }
-		public ReactiveCollection<PlayerData> Players { get; set; }
+		public ReactiveDictionary<int, PlayerData> Players { get; set; }
 		public ReactiveProperty<int> RoundNo { get; set; }
 		public Round CurrentRound { get; set; }
 		public bool IsServer { get; set; }
 
-		public GameSet(bool isServer) {
+		public GameSet(bool isServer, int connectionId) {
 			IsServer = isServer;
 			RoundNo = new ReactiveProperty<int>(0);
-			Players = new ReactiveCollection<PlayerData>();
-			AddPlayer("Name"); //TODO: Get player name
+			Players = new ReactiveDictionary<int, PlayerData>();
+			AddPlayer(connectionId, PlayerPrefs.GetString("PlayerName", "Player"));
 			LocalPlayer = Players[0];
 		}
 
-		public void AddPlayer(string name) {
-			Players.Add(new PlayerData() {
+		public void AddPlayer(int id, string name) {
+			Players[id] = new PlayerData() {
 				Player = new Player(),
 				Name = name,
 				Points = new ReactiveProperty<int>(0)
-			});
+			};
 		}
 
 		public void Update(float delta) {
