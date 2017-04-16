@@ -12,13 +12,22 @@ namespace UnrelentingArena.Classes.Game.Models {
 		
 		public ReactiveDictionary<uint, PlayerData> Players { get; set; }
 		public ReactiveProperty<int> RoundNo { get; set; }
-		public Round CurrentRound { get; set; }
+		public Round[] Rounds { get; set; }
 		public bool IsServer { get; set; }
 
 		public GameSet(bool isServer, int connectionId) {
 			IsServer = isServer;
 			RoundNo = new ReactiveProperty<int>(0);
 			Players = new ReactiveDictionary<uint, PlayerData>();
+			Rounds = new Round[6];
+			for(int i = 0; i < Rounds.Length; i++)
+				Rounds[i] = new Round();
+		}
+		
+		public Round CurrentRound {
+			get {
+				return Rounds[RoundNo.Value];
+			}
 		}
 
 		public void AddPlayer(uint id, string name, Color color) {

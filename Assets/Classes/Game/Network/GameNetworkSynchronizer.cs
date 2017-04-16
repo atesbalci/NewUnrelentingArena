@@ -84,11 +84,6 @@ namespace UnrelentingArena.Classes.Game.Network {
 		[ClientRpc]
 		public void RpcRefreshPlayerList(uint[] ids, string[] names) {
 			Game.RefreshPlayers(ids, names);
-			string test = "";
-			foreach (var pl in Game.Players) {
-				test += pl.Key + ":" + pl.Value.Name + ", ";
-			}
-			Debug.Log(test);
 		}
 	}
 }
