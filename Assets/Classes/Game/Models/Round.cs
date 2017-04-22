@@ -4,7 +4,7 @@ using UnrelentingArena.Classes.Utility;
 
 namespace UnrelentingArena.Classes.Game.Models {
 	public enum RoundState {
-		Pre, Started, End
+		None, Pre, Started, End
 	}
 
 	public class Round : GameModel {
@@ -15,20 +15,7 @@ namespace UnrelentingArena.Classes.Game.Models {
 
 		public Round() {
 			Time = 0;
-			foreach (var player in Game.Players) {
-				player.Value.Player.Dead.Subscribe(val => {
-					if (val) {
-						int aliveAmt = 0;
-						foreach (var pl in Game.Players) {
-							if (!pl.Value.Player.Dead.Value)
-								aliveAmt++;
-						}
-						if (aliveAmt <= 1)
-							EndRound();
-					}
-				});
-			}
-			State = RoundState.Pre;
+			_state = RoundState.None;
 		}
 
 		public RoundState State {
@@ -38,15 +25,23 @@ namespace UnrelentingArena.Classes.Game.Models {
 			set {
 				Time = 0;
 				_state = value;
+                if(State == RoundState.Started)
+                {
+                    foreach (var pl in Game.Players)
+                    {
+                        pl.Value.Player.Dead.Value = false;
+                    }
+                }
+                Game.RoundStateChange(this, State);
 			}
 		}
 
-		private void EndRound() {
-			//TODO: End round
-			State = RoundState.End;
-			foreach (var pl in Game.Players) {
-				pl.Value.Player.Dead.Value = true;
-			}
+		public void EndRound() {
+            //TODO: End round
+            foreach (var pl in Game.Players) {
+                pl.Value.Player.Dead.Value = true;
+            }
+            State = RoundState.End;
 		}
 
 		public void Update(float delta) {

@@ -9,47 +9,64 @@ using UnrelentingArena.Classes.Utility;
 using UniRx;
 
 namespace UnrelentingArena.Classes.Game.Network {
-	public class SendNameEvent : GameEvent {
-		public uint Id { get; set; }
-		public string Name { get; set; }
-	}
+    public class InitializePlayerAvatarEvent {
+        public uint Id { get; set; }
+        public string Name { get; set; }
+        public NetworkInstanceId PlayerObject { get; set; }
+    }
 
 	public class PlayerRemovedEvent : GameEvent {
 		public uint Id { get; set; }
 	}
 
 	public class GameNetworkSynchronizer : GameNetworker {
-		public GameSet Game { get; set; }
+		public ReactiveProperty<GameSet> Game { get; set; }
 
-		public override void Start() {
-			base.Start();
-			MessageManager.ReceiveEvent<SendNameEvent>().Subscribe(ev => {
-				if(isServer) {
-					AddPlayer(ev.Id, ev.Name);
-				}
-			});
+        public void Awake() {
+            Game = new ReactiveProperty<GameSet>();
+        }
+
+        public override void Start() {
+            base.Start();
+            MessageManager.ReceiveEvent<InitializePlayerAvatarEvent>().Subscribe(ev => {
+                if (isServer) {
+                    AddPlayer(ev.Id, ev.Name);
+                }
+            });
 			MessageManager.ReceiveEvent<PlayerRemovedEvent>().Subscribe(ev => {
-				if (isServer) {
-					RemovePlayer(ev.Id);
+                if (isServer) {
+                    if (Game.Value.Started) {
+                        RemovePlayer(ev.Id);
+                    } else {
+                        RpcMarkDisconnected(ev.Id);
+                    }
 				}
 			});
+            MessageManager.ReceiveEvent<GameStateChangedEvent>().Subscribe(ev => {
+                if(ev.RoundNo == 0 && ev.State == RoundState.Pre) {
+                    foreach(var kvp in Game.Value.Players) {
+                        NetworkServer.FindLocalObject(new NetworkInstanceId(kvp.Key)).
+                            GetComponent<PlayerScript>().Model = kvp.Value.Player;
+                    }
+                }
+            });
 		}
 
 		public void InitializeServer() {
 			base.OnStartServer();
-			Game = new GameSet(true, 0);
+			Game.Value = new GameSet(true, 0);
 		}
 
 		public void InitializeClient(NetworkConnection conn) {
-			Game = new GameSet(false, conn.connectionId);
-		}
+			Game.Value = new GameSet(false, conn.connectionId);
+        }
 
 		public void Disconnect(NetworkConnection conn) {
 			Game = null;
-		}
+        }
 
 		public void AddPlayer(uint id, string name) {
-			Game.AddPlayer(id, name, GameSet.Colors[Game.Players.Count]);
+			Game.Value.AddPlayer(id, name, GameSet.Colors[Game.Value.Players.Count]);
 			uint[] ids;
 			string[] names;
 			PlayersDictionaryToArrays(out ids, out names);
@@ -57,7 +74,7 @@ namespace UnrelentingArena.Classes.Game.Network {
 		}
 
 		public void RemovePlayer(uint id) {
-			Game.RemovePlayer(id);
+			Game.Value.RemovePlayer(id);
 			uint[] ids;
 			string[] names;
 			PlayersDictionaryToArrays(out ids, out names);
@@ -66,11 +83,11 @@ namespace UnrelentingArena.Classes.Game.Network {
 
 		public override void Update() {
 			base.Update();
-			Game.Update(Time.deltaTime);
+			Game.Value.Update(Time.deltaTime);
 		}
 
 		public void PlayersDictionaryToArrays(out uint[] ids, out string[] names) {
-			var dict = Game.Players;
+			var dict = Game.Value.Players;
 			int i = 0;
 			ids = new uint[dict.Count];
 			names = new string[dict.Count];
@@ -83,7 +100,12 @@ namespace UnrelentingArena.Classes.Game.Network {
 
 		[ClientRpc]
 		public void RpcRefreshPlayerList(uint[] ids, string[] names) {
-			Game.RefreshPlayers(ids, names);
+			Game.Value.RefreshPlayers(ids, names);
 		}
+
+        [ClientRpc]
+        public void RpcMarkDisconnected(uint id) {
+            Game.Value.Players[id].Disconnected = true;
+        }
 	}
 }

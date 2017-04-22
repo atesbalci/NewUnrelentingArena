@@ -40,13 +40,13 @@ namespace UnrelentingArena.Classes.Game.Network {
 		}
 
 		public override void OnStartLocalPlayer() {
-			CmdSendName(PlayerPrefs.GetString("PlayerName", "Player"), netId.Value);
 			PlayerScript.IsLocalPlayer = true;
-		}
+            CmdSendName(PlayerPrefs.GetString("PlayerName", "Player"));
+        }
 
 		public override void OnStartClient() {
 			base.OnStartClient();
-			gameObject.SetActive(false);
+            gameObject.SetActive(false);
 		}
 
 		public override void Start() {
@@ -117,9 +117,9 @@ namespace UnrelentingArena.Classes.Game.Network {
 		}
 
 		[Command]
-		public void CmdSendName(string name, uint id) {
-			MessageManager.SendEvent(new SendNameEvent {
-				Id = id,
+		public void CmdSendName(string name) {
+			MessageManager.SendEvent(new InitializePlayerAvatarEvent {
+				Id = netId.Value,
 				Name = name
 			});
 		}
