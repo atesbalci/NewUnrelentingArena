@@ -13,9 +13,11 @@ namespace UnrelentingArena.Classes.Game.Models {
 		public Color Color { get; set; }
 
 		public Player(Color color) {
-			CurrentSpeed = new ReactiveProperty<float>(10);
-			Color = color;
+            Color = color;
+            CurrentSpeed = new ReactiveProperty<float>(10);
 			Dead = new ReactiveProperty<bool>(false);
+            Health = new ReactiveProperty<float>();
+            Energy = new ReactiveProperty<float>();
 		}
 	}
 }

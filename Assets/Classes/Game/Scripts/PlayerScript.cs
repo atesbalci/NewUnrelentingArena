@@ -13,10 +13,12 @@ namespace UnrelentingArena.Classes.Game.Scripts {
 	}
 
 	public class PlayerScript : GameScript {
-		public Vector3ReactiveProperty CurrentMovement { get; set; }
+        public MonoBehaviour[] ToBeDisabledComponents;
+
+        public Vector3ReactiveProperty CurrentMovement { get; set; }
 		public QuaternionReactiveProperty CurrentRotation { get; set; }
 		public bool IsLocalPlayer { get; set; }
-		public Player Player {
+        public Player Player {
 			get {
 				return Model as Player;
 			}
@@ -25,7 +27,14 @@ namespace UnrelentingArena.Classes.Game.Scripts {
 		private ControlManager _controlManager;
 		private Plane _plane;
 
-		private void Awake() {
+        public void SetActivePlayer(bool b) {
+            foreach (Transform t in transform)
+                t.gameObject.SetActive(b);
+            foreach (var comp in ToBeDisabledComponents)
+                comp.enabled = b;
+        }
+
+        private void Awake() {
 			IsLocalPlayer = false;
 		}
 

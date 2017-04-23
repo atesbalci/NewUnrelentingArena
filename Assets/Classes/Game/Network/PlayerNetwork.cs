@@ -46,8 +46,8 @@ namespace UnrelentingArena.Classes.Game.Network {
 
 		public override void OnStartClient() {
 			base.OnStartClient();
-            gameObject.SetActive(false);
-		}
+            PlayerScript.SetActivePlayer(false);
+        }
 
 		public override void Start() {
 			base.Start();
@@ -92,11 +92,12 @@ namespace UnrelentingArena.Classes.Game.Network {
 			Player.Energy.Value = energy;
 		}
 
-		public override void OnNetworkDestroy() {
+        public override void OnNetworkDestroy() {
 			base.OnNetworkDestroy();
 			if (isServer) {
-				MessageManager.SendEvent(new PlayerRemovedEvent {
-					Id = netId.Value
+                MessageManager.SendEvent(new PlayerRemovedEvent {
+                    Id = netId.Value,
+                    IsMe = isLocalPlayer
 				});
 			}
 		}
@@ -118,9 +119,9 @@ namespace UnrelentingArena.Classes.Game.Network {
 
 		[Command]
 		public void CmdSendName(string name) {
-			MessageManager.SendEvent(new InitializePlayerAvatarEvent {
-				Id = netId.Value,
-				Name = name
+            MessageManager.SendEvent(new InitializePlayerAvatarEvent {
+                Id = netId.Value,
+                Name = name
 			});
 		}
 	}

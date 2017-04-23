@@ -7,16 +7,16 @@ namespace UniRx
         where TValue : IDisposable
     {
         bool isDisposed = false;
-        readonly Dictionary<TKey, TValue> inner;
+        readonly System.Collections.Generic.Dictionary<TKey, TValue> inner;
 
         public DictionaryDisposable()
         {
-            inner = new Dictionary<TKey, TValue>();
+            inner = new System.Collections.Generic.Dictionary<TKey, TValue>();
         }
 
         public DictionaryDisposable(IEqualityComparer<TKey> comparer)
         {
-            inner = new Dictionary<TKey, TValue>(comparer);
+            inner = new System.Collections.Generic.Dictionary<TKey, TValue>(comparer);
         }
 
         public TValue this[TKey key]
@@ -60,7 +60,7 @@ namespace UniRx
             }
         }
 
-        public Dictionary<TKey, TValue>.KeyCollection Keys
+        public System.Collections.Generic.Dictionary<TKey, TValue>.KeyCollection Keys
         {
             get
             {
@@ -68,7 +68,7 @@ namespace UniRx
             }
         }
 
-        public Dictionary<TKey, TValue>.ValueCollection Values
+        public System.Collections.Generic.Dictionary<TKey, TValue>.ValueCollection Values
         {
             get
             {
@@ -139,11 +139,11 @@ namespace UniRx
             }
         }
 
-        public Dictionary<TKey, TValue>.Enumerator GetEnumerator()
+        public System.Collections.Generic.Dictionary<TKey, TValue>.Enumerator GetEnumerator()
         {
             lock (inner)
             {
-                return new Dictionary<TKey, TValue>(inner).GetEnumerator();
+                return new System.Collections.Generic.Dictionary<TKey, TValue>(inner).GetEnumerator();
             }
         }
 

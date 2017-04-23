@@ -5,37 +5,53 @@ using UnityEngine;
 using UnrelentingArena.Classes.Utility;
 
 namespace UnrelentingArena.Classes.Game.Models {
-    public class GameStateChangedEvent : GameEvent {
-        public Round Round;
-        public int RoundNo;
-        public RoundState State;
+    public enum RoundState {
+        None, Pre, Started, End
     }
 	public class PlayerData : GameModel {
 		public Player Player { get; set; }
 		public string Name { get; set; }
 		public ReactiveProperty<int> Points { get; set; }
         public bool Disconnected { get; set; }
-	}
-	public class GameSet : GameModel {
+    }
+    public class GameStateChangedEvent : GameEvent {
+        public Round Round { get; set; }
+        public int RoundNo { get; set; }
+        public RoundState State { get; set; }
+    }
+    public class PlayerListChangedEvent : GameEvent {
+        public System.Collections.Generic.Dictionary<uint, PlayerData> Players { get; set; }
+    }
+    public class EndPreGameEvent : GameEvent { }
+
+    public class GameSet : GameModel {
 		public readonly static Color[] Colors = { Color.red, Color.green, Color.blue, Color.cyan, Color.magenta, Color.yellow };
 		
-		public ReactiveDictionary<uint, PlayerData> Players { get; set; }
+		public System.Collections.Generic.Dictionary<uint, PlayerData> Players { get; set; }
 		public ReactiveProperty<int> RoundNo { get; set; }
 		public Round[] Rounds { get; set; }
 		public bool IsServer { get; set; }
         public bool Started { get; set; }
 
+        private RoundState _state;
         private List<IDisposable> _disposables;
 
-		public GameSet(bool isServer, int connectionId) {
+		public GameSet(bool isServer) {
             _disposables = new List<IDisposable>();
+            _state = RoundState.None;
 			IsServer = isServer;
 			RoundNo = new ReactiveProperty<int>(0);
-			Players = new ReactiveDictionary<uint, PlayerData>();
+            Players = new System.Collections.Generic.Dictionary<uint, PlayerData>();
 			Rounds = new Round[6];
             Started = false;
 			for(int i = 0; i < Rounds.Length; i++)
 				Rounds[i] = new Round();
+            if (IsServer) {
+                _disposables.Add(MessageManager.ReceiveEvent<EndPreGameEvent>()
+                    .Subscribe(ev => {
+                    State = RoundState.Started;
+                }));
+            }
 		}
 
         ~GameSet()
@@ -43,6 +59,32 @@ namespace UnrelentingArena.Classes.Game.Models {
             foreach(var disp in _disposables)
             {
                 disp.Dispose();
+            }
+        }
+
+        public RoundState State {
+            get {
+                return _state;
+            }
+            set {
+                _state = value;
+                switch(State) {
+                    case RoundState.Pre:
+                        
+                        break;
+                    case RoundState.Started:
+                        foreach (var pl in Players) {
+                            pl.Value.Player.Dead.Value = false;
+                        }
+                        break;
+                    case RoundState.End:
+
+                        break;
+                }
+                MessageManager.SendEvent(new GameStateChangedEvent {
+                    RoundNo = RoundNo.Value,
+                    State = State
+                });
             }
         }
 
@@ -65,7 +107,7 @@ namespace UnrelentingArena.Classes.Game.Models {
                     }
                 }));
             }
-            CurrentRound.State = RoundState.Pre;
+            State = RoundState.Pre;
         }
 		
 		public Round CurrentRound {
@@ -88,7 +130,7 @@ namespace UnrelentingArena.Classes.Game.Models {
 		}
 
 		public void Update(float delta) {
-			if(CurrentRound != null)
+			if(Started)
 				CurrentRound.Update(delta);
 		}
 
@@ -97,16 +139,9 @@ namespace UnrelentingArena.Classes.Game.Models {
 			for(int i = 0; i < names.Length; i++) {
 				AddPlayer(ids[i], names[i], Colors[i]);
 			}
-		}
-
-        public void RoundStateChange(Round source, RoundState state) {
-            if (source == CurrentRound) {
-                MessageManager.SendEvent(new GameStateChangedEvent {
-                    Round = source,
-                    RoundNo = RoundNo.Value,
-                    State = state
-                });
-            }
+            MessageManager.SendEvent(new PlayerListChangedEvent {
+                Players = Players
+            });
         }
 	}
 }

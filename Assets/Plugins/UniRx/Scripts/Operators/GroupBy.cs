@@ -56,7 +56,7 @@ namespace UniRx.Operators
         class GroupBy : OperatorObserverBase<TSource, IGroupedObservable<TKey, TElement>>
         {
             readonly GroupByObservable<TSource, TKey, TElement> parent;
-            readonly Dictionary<TKey, ISubject<TElement>> map;
+            readonly System.Collections.Generic.Dictionary<TKey, ISubject<TElement>> map;
             ISubject<TElement> nullKeySubject;
 
             CompositeDisposable groupDisposable;
@@ -68,11 +68,11 @@ namespace UniRx.Operators
                 this.parent = parent;
                 if (parent.capacity.HasValue)
                 {
-                    map = new Dictionary<TKey, ISubject<TElement>>(parent.capacity.Value, parent.comparer);
+                    map = new System.Collections.Generic.Dictionary<TKey, ISubject<TElement>>(parent.capacity.Value, parent.comparer);
                 }
                 else
                 {
-                    map = new Dictionary<TKey, ISubject<TElement>>(parent.comparer);
+                    map = new System.Collections.Generic.Dictionary<TKey, ISubject<TElement>>(parent.comparer);
                 }
             }
 

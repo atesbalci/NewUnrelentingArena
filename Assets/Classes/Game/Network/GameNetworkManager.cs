@@ -21,5 +21,10 @@ namespace UnrelentingArena.Classes.Game.Network {
 			base.OnClientConnect(conn);
 			Synchronizer.InitializeClient(conn);
 		}
-	}
+
+        public override void OnStopClient() {
+            base.OnStopClient();
+            Synchronizer.Disconnect();
+        }
+    }
 }

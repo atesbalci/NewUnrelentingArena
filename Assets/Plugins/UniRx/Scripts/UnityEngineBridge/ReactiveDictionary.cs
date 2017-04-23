@@ -111,7 +111,7 @@ namespace UniRx
     }
 
     [Serializable]
-    public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue>, IDictionary<TKey, TValue>, IEnumerable, ICollection<KeyValuePair<TKey, TValue>>, IEnumerable<KeyValuePair<TKey, TValue>>, IDictionary, IDisposable
+    public class Dictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue>, IDictionary<TKey, TValue>, IEnumerable, ICollection<KeyValuePair<TKey, TValue>>, IEnumerable<KeyValuePair<TKey, TValue>>, IDictionary, IDisposable
 #if !UNITY_METRO
         , ISerializable, IDeserializationCallback
 #endif
@@ -122,19 +122,19 @@ namespace UniRx
 #if !UniRxLibrary
         [UnityEngine.SerializeField]
 #endif
-        readonly Dictionary<TKey, TValue> inner;
+        readonly System.Collections.Generic.Dictionary<TKey, TValue> inner;
 
-        public ReactiveDictionary()
+        public Dictionary()
         {
-            inner = new Dictionary<TKey, TValue>();
+            inner = new System.Collections.Generic.Dictionary<TKey, TValue>();
         }
 
-        public ReactiveDictionary(IEqualityComparer<TKey> comparer)
+        public Dictionary(IEqualityComparer<TKey> comparer)
         {
-            inner = new Dictionary<TKey, TValue>(comparer);
+            inner = new System.Collections.Generic.Dictionary<TKey, TValue>(comparer);
         }
 
-        public ReactiveDictionary(Dictionary<TKey, TValue> innerDictionary)
+        public Dictionary(System.Collections.Generic.Dictionary<TKey, TValue> innerDictionary)
         {
             inner = innerDictionary;
         }
@@ -171,7 +171,7 @@ namespace UniRx
             }
         }
 
-        public Dictionary<TKey, TValue>.KeyCollection Keys
+        public System.Collections.Generic.Dictionary<TKey, TValue>.KeyCollection Keys
         {
             get
             {
@@ -179,7 +179,7 @@ namespace UniRx
             }
         }
 
-        public Dictionary<TKey, TValue>.ValueCollection Values
+        public System.Collections.Generic.Dictionary<TKey, TValue>.ValueCollection Values
         {
             get
             {
@@ -236,7 +236,7 @@ namespace UniRx
             return inner.TryGetValue(key, out value);
         }
 
-        public Dictionary<TKey, TValue>.Enumerator GetEnumerator()
+        public System.Collections.Generic.Dictionary<TKey, TValue>.Enumerator GetEnumerator()
         {
             return inner.GetEnumerator();
         }
@@ -503,9 +503,9 @@ namespace UniRx
 
     public static partial class ReactiveDictionaryExtensions
     {
-        public static ReactiveDictionary<TKey, TValue> ToReactiveDictionary<TKey, TValue>(this Dictionary<TKey, TValue> dictionary)
+        public static Dictionary<TKey, TValue> ToReactiveDictionary<TKey, TValue>(this System.Collections.Generic.Dictionary<TKey, TValue> dictionary)
         {
-            return new ReactiveDictionary<TKey, TValue>(dictionary);
+            return new Dictionary<TKey, TValue>(dictionary);
         }
     }
 }

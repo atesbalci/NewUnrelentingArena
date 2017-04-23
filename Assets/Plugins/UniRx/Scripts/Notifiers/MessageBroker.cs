@@ -55,7 +55,7 @@ namespace UniRx
         public static readonly IMessageBroker Default = new MessageBroker();
 
         bool isDisposed = false;
-        readonly Dictionary<Type, object> notifiers = new Dictionary<Type, object>();
+        readonly System.Collections.Generic.Dictionary<Type, object> notifiers = new System.Collections.Generic.Dictionary<Type, object>();
 
         public void Publish<T>(T message)
         {
@@ -114,7 +114,7 @@ namespace UniRx
         public static readonly IAsyncMessageBroker Default = new AsyncMessageBroker();
 
         bool isDisposed = false;
-        readonly Dictionary<Type, object> notifiers = new Dictionary<Type, object>();
+        readonly System.Collections.Generic.Dictionary<Type, object> notifiers = new System.Collections.Generic.Dictionary<Type, object>();
 
         public IObservable<Unit> PublishAsync<T>(T message)
         {
