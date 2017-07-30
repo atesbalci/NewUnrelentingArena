@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using Game.Models;
 using UnityEngine;
-using UnrelentingArena.Classes.Game.Models;
 
-namespace UnrelentingArena.Classes.Game.Views {
+namespace Game.Views {
     public class GameView : MonoBehaviour {
         public GameModel Model { get; private set; }
 

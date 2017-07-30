@@ -1,6 +1,4 @@
-﻿using UniRx;
-
-namespace UnrelentingArena.Classes.Game.Models {
+﻿namespace Game.Models {
 	public abstract class GameModel {
 
 	}

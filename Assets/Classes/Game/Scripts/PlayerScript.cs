@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnrelentingArena.Classes.Game.Models;
-using UnrelentingArena.Classes.Utility;
+﻿using Game.Models;
 using UniRx;
+using UnityEngine;
+using Utility;
 
-namespace UnrelentingArena.Classes.Game.Scripts {
+namespace Game.Scripts {
 	public class SkillCastBeginEvent : GameEvent { }
 	public class SkillCastEvent {
 		public Vector3 Direction { get; set; }

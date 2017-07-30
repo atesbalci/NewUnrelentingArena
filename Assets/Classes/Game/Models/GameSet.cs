@@ -1,10 +1,10 @@
-﻿using UniRx;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
-using UnrelentingArena.Classes.Utility;
+using Utility;
 
-namespace UnrelentingArena.Classes.Game.Models {
+namespace Game.Models {
     public enum RoundState {
         None, Pre, Started, End
     }

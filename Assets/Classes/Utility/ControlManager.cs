@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace UnrelentingArena.Classes.Utility {
+namespace Utility {
 	public enum GameKey {
 		BasicAttack,
 		SkillAttack,

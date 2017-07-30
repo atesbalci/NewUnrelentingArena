@@ -1,8 +1,8 @@
-﻿using UniRx;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
 
-namespace UnrelentingArena.Classes.Game.Models {
+namespace Game.Models {
 	public class Player : GameModel {
 		public ReactiveProperty<float> Health { get; set; }
 		public ReactiveProperty<float> Energy { get; set; }

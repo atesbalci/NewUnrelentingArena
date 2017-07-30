@@ -1,11 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using Game.Scripts;
 using UnityEngine.Networking;
-using UnrelentingArena.Classes.Game.Models;
-using UnrelentingArena.Classes.Game.Scripts;
 
-namespace UnrelentingArena.Classes.Game.Network {
+namespace Game.Network {
 	public class GameNetworker : NetworkBehaviour {
 		public GameScript Script;
 

@@ -1,8 +1,4 @@
-﻿using UniRx;
-using System;
-using UnrelentingArena.Classes.Utility;
-
-namespace UnrelentingArena.Classes.Game.Models {
+﻿namespace Game.Models {
 	public class Round : GameModel {
 		public GameSet Game { get; set; }
 		public float Time { get; private set; }

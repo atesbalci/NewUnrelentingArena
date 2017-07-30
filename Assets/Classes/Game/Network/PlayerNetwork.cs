@@ -1,13 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using Game.Models;
+using Game.Scripts;
+using UniRx;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnrelentingArena.Classes.Game.Models;
-using UnrelentingArena.Classes.Game.Scripts;
-using UniRx;
-using UnrelentingArena.Classes.Utility;
+using Utility;
 
-namespace UnrelentingArena.Classes.Game.Network {
+namespace Game.Network {
 	public class PlayerNetwork : GameNetworker {
 		public float SyncFrequency = 0.05f;
 

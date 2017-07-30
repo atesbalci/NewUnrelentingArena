@@ -1,10 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using Game.Models;
 using UnityEngine;
-using UnrelentingArena.Classes.Game.Models;
-using System;
 
-namespace UnrelentingArena.Classes.Game.Scripts {
+namespace Game.Scripts {
 	public abstract class SkillScript : GameScript {
 		public float RemainingTime { get; set; }
 

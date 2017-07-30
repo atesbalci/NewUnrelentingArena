@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
+using Game.Models;
+using Game.Network;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
-using UnrelentingArena.Classes.Utility;
-using UnrelentingArena.Classes.Game.Models;
-using UnrelentingArena.Classes.Game.Network;
-using UniRx;
+using Utility;
 
-namespace UnrelentingArena.Classes.Game.Views {
+namespace Game.Views {
     public class GameUI : GameView {
         [Header("Scores")]
         public RectTransform Scores;

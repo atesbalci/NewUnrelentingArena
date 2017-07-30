@@ -1,10 +1,8 @@
-﻿using UniRx;
-using UnrelentingArena.Classes.Game.Models;
-using UnrelentingArena.Classes.Game.Network;
-using UnrelentingArena.Classes.Game.Views;
+﻿using Game.Network;
+using Game.Views;
 using UnityEngine;
 
-namespace UnrelentingArena.Classes.Game {
+namespace Game {
 	public class GameController : MonoBehaviour {
         public GameNetworkSynchronizer Synchronizer;
         public GameUI GameUI;
