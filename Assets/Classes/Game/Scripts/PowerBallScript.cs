@@ -1,11 +1,15 @@
-﻿namespace Game.Scripts {
-	public class PowerBallScript : SkillScript {
-		protected override void UpdateAlive() {
-			//TODO
-		}
+﻿namespace Game.Scripts
+{
+    public class PowerBallScript : SkillScript
+    {
+        protected override void UpdateAlive()
+        {
+            //TODO
+        }
 
-		protected override void UpdateDead() {
-			//TODO
-		}
-	}
+        protected override void UpdateDead()
+        {
+            //TODO
+        }
+    }
 }

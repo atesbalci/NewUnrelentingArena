@@ -2,14 +2,17 @@
 using Game.Views;
 using UnityEngine;
 
-namespace Game {
-	public class GameController : MonoBehaviour {
+namespace Game
+{
+    public class GameController : MonoBehaviour
+    {
         public GameNetworkSynchronizer Synchronizer;
         public GameUI GameUI;
 
-        void Awake() {
+        void Awake()
+        {
             Synchronizer.Init();
             GameUI.Init(Synchronizer);
         }
-	}
+    }
 }

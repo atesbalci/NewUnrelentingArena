@@ -1,5 +1,6 @@
-﻿namespace Game.Models {
-	public abstract class GameModel {
-
-	}
+﻿namespace Game.Models
+{
+    public abstract class GameModel
+    {
+    }
 }

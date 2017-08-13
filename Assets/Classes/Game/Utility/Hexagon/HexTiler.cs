@@ -1,109 +1,136 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System;
+using UniRx;
+using UnityEngine;
 
-public class HexTiler : MonoBehaviour {
-	public GameObject hexPrefab;
-	public float hexSideLength;
-	public int width;
-	public int height;
-	public bool refresh;
+namespace Game.Utility.Hexagon
+{
+    public class HexRiser
+    {
+        public bool Active { get; set; }
+        public Vector3 Location { get; set; }
+    }
 
-	public float radius = 10;
-	public float closeHeight = 10;
-	public float farHeight = 1;
+    public class HexTiler : MonoBehaviour
+    {
+        public GameObject HexPrefab;
+        public float HexSpacing;
+        public int Width;
+        public int Height;
 
-	private Vector4[] radialRises;
-	private int riseAmt;
-	private Hexagon[] hexagons;
+        public AnimationCurve HeightCurve;
+        public float Radius;
+        public float CloseHeight;
+        public float FarHeight;
 
-	void Start() {
-		radialRises = new Vector4[10];
-		riseAmt = 0;
-		RefreshHexagons();
-	}
+        private Hexagon[] _hexagons;
+        private List<HexRiser> _risers;
+        private List<Hexagon> _blacklistedHexagons;
 
-	public void RefreshHexagons() {
-		Shader.SetGlobalFloat("Radius", radius);
-		Shader.SetGlobalFloat("CloseHeight", closeHeight);
-		Shader.SetGlobalFloat("FarHeight", farHeight);
-		List<Hexagon> hexagons = new List<Hexagon>();
-		int childCount = transform.childCount;
-		for (int i = 0; i < childCount; i++)
-			Destroy(transform.GetChild(i).gameObject);
-		List<Hexagon> midLine = new List<Hexagon>();
-		float curx = 0;
-		for (int i = 0; i < width; i++) {
-			if (i % 2 == 1)
-				curx += (3 * hexSideLength);
-			Hexagon newHex = Instantiate(hexPrefab).GetComponent<Hexagon>();
-			newHex.transform.SetParent(gameObject.transform);
-			newHex.transform.localPosition = new Vector3(i % 2 == 0 ? curx : -curx, 0, 0);
-			newHex.gameObject.name = "Hex";
-			newHex.gameObject.layer = gameObject.layer;
-			midLine.Add(newHex);
-			hexagons.Add(newHex);
-		}
-		float xshift = Mathf.Cos(Mathf.PI / 3) * hexSideLength + hexSideLength;
-		float zshift = Mathf.Sin(Mathf.PI / 3) * hexSideLength;
-		for (int i = 0; i < height; i++) {
-			int heightMult = (i / 2) + 1;
-			foreach (Hexagon obj in midLine) {
-				Hexagon newHex = Instantiate(obj.gameObject).GetComponent<Hexagon>();
-				newHex.transform.SetParent(gameObject.transform);
-				newHex.transform.localPosition = new Vector3(newHex.transform.localPosition.x, 0, newHex.transform.localPosition.z) +
-					new Vector3(i % 4 < 2 ? xshift : 0, 0, (i % 2 == 0 ? 1 : -1) * heightMult * zshift);
-				newHex.gameObject.name = "Hex";
-				newHex.gameObject.layer = gameObject.layer;
-				hexagons.Add(newHex);
-			}
-		}
-		this.hexagons = hexagons.ToArray();
-	}
+        private void Start()
+        {
+            RefreshHexagons();
+        }
 
-	void Update() {
-		if (refresh) {
-			refresh = false;
-			RefreshHexagons();
-		}
-		float dist;
-		for (int i = 0; i < hexagons.Length; i++) {
-			hexagons[i].Refresh();
-			hexagons[i].targetHeight = farHeight;
-			for (int n = 0; n < riseAmt; n++) {
-				dist = DistanceSquare(hexagons[i].position, radialRises[n]);
-				hexagons[i].targetHeight = Min(hexagons[i].targetHeight,
-					Lerp(closeHeight, farHeight, Min(dist / radius, 1)));
-			}
-		}
-		//for (int i = 0; i < radialRises.Length; i++) {
-		//	if (riseAmt > i)
-		//		Shader.SetGlobalVector("RiserPosition" + i.ToString(), radialRises[i]);
-		//	else
-		//		Shader.SetGlobalVector("RiserPosition" + i.ToString(), new Vector4(0, 0, 0, -1000000));
-		//}
-		riseAmt = 0;
-	}
+        public void RefreshHexagons()
+        {
+            _blacklistedHexagons = new List<Hexagon>();
+            var hexagons = new List<Hexagon>();
+            var childCount = transform.childCount;
+            for (var i = 0; i < childCount; i++)
+                Destroy(transform.GetChild(i).gameObject);
+            var midLine = new List<Hexagon>();
+            float curx = 0;
+            for (var i = 0; i < Width; i++)
+            {
+                if (i % 2 == 1)
+                    curx += (3 * HexSpacing);
+                var newHex = Instantiate(HexPrefab).GetComponent<Hexagon>();
+                newHex.transform.SetParent(gameObject.transform);
+                newHex.transform.localPosition = new Vector3(i % 2 == 0 ? curx : -curx, 0, 0);
+                newHex.gameObject.name = "Hex";
+                midLine.Add(newHex);
+                hexagons.Add(newHex);
+                newHex.Init(this);
+            }
+            var xshift = Mathf.Cos(Mathf.PI / 3) * HexSpacing + HexSpacing;
+            var zshift = Mathf.Sin(Mathf.PI / 3) * HexSpacing;
+            for (var i = 0; i < Height; i++)
+            {
+                var heightMult = (i / 2) + 1;
+                foreach (var obj in midLine)
+                {
+                    var newHex = Instantiate(obj.gameObject).GetComponent<Hexagon>();
+                    newHex.transform.SetParent(gameObject.transform);
+                    newHex.transform.localPosition =
+                        new Vector3(newHex.transform.localPosition.x, 0, newHex.transform.localPosition.z) +
+                        new Vector3(i % 4 < 2 ? xshift : 0, 0, (i % 2 == 0 ? 1 : -1) * heightMult * zshift);
+                    newHex.gameObject.name = "Hex";
+                    hexagons.Add(newHex);
+                    newHex.Init(this);
+                }
+            }
+            _hexagons = hexagons.ToArray();
+            _risers = new List<HexRiser>();
+        }
 
-	public void RadialRise(Vector3 loc) {
-		radialRises[riseAmt] = new Vector4(loc.x, loc.y, loc.z, 1);
-		riseAmt++;
-	}
+        public void AddHexRiser(HexRiser riser)
+        {
+            _risers.Add(riser);
+        }
 
-	private float Lerp(float a, float b, float ratio) {
-		return a + (b - a) * ratio;
-	}
 
-	private float Max(float a, float b) {
-		return a > b ? a : b;
-	}
+        private void Update()
+        {
+            if (Input.GetMouseButton(0))
+            {
+                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+                if (Physics.Raycast(ray, out hit, 1000f, LayerMask.GetMask("Hexagon")))
+                {
+                    var riser = new HexRiser
+                    {
+                        Location = hit.collider.transform.position,
+                        Active = true
+                    };
+                    var hex = hit.collider.GetComponent<Hexagon>();
+                    if (!_blacklistedHexagons.Contains(hex))
+                    {
+                        AddHexRiser(riser);
+                        _blacklistedHexagons.Add(hex);
+                        Observable.Timer(TimeSpan.FromSeconds(1)).Subscribe(lng =>
+                        {
+                            riser.Active = false;
+                            _blacklistedHexagons.Remove(hex);
+                        });
+                    }
+                }
+            }
+            for(var i = 0; i < _risers.Count; i++)
+            {
+                if (!_risers[i].Active)
+                {
+                    _risers.RemoveAt(i);
+                    i--;
+                }
+            }
+            foreach (var hex in _hexagons)
+            {
+                hex.Refresh();
+                hex.TargetHeight = FarHeight;
+                foreach (var riser in _risers)
+                {
+                    var dist = DistanceSquare(hex.Position, riser.Location);
+                    hex.TargetHeight = Mathf.Max(hex.TargetHeight,
+                        Mathf.Lerp(CloseHeight, FarHeight, HeightCurve.Evaluate(Mathf.Min(1, dist / Radius))));
+                }
+                hex.Refresh();
+            }
+        }
 
-	private float Min(float a, float b) {
-		return a < b ? a : b;
-	}
-
-	private float DistanceSquare(Vector3 a, Vector3 b) {
-		return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z);
-	}
+        private float DistanceSquare(Vector3 a, Vector3 b)
+        {
+            return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z);
+        }
+    }
 }
